@@ -1,59 +1,86 @@
-#import checkStrength
-#import suggestPassword
-#import saveRemove
+import login # handles creation of saved txt
+import inputinfo # input credentials
+import edit
+import display
+import write
 import os
-import login
-import inputinfo
+import generate
 
 dir={}
-#login.login()
+mainUser, mainPass = login.login()
+dir = write.load(mainUser)
+display.clear()
 
 mainloop=True
 while mainloop:
     # display menu
-    print('┌─────────────────────────ANONG GUSTO MO GAWIN ERP─┐')
-    print('│%-50.50s│\n│%-50.50s│\n│%-50.50s│\n│%-50.50s│'%(
-        '1. Add Credential','2. Remove Credential','3. Exit','n. Enter Key to View Password'
-        ))
-    print('└──────────────────────────────────────────────────┘')
+    display.menu()
     print('┌────────────────────────────────SAVED CREDENTIALS─┐')
-    if len(dir)==0:
+    if bool(dir) == False:
         print('│%-50.50s│'%('No saved credentials yet.'))
-    for key, value in dir.items():
-        print('│%-50.50s│'%(f'{key}:'))
-        print('│\tusername:\t%-27.27s│'%(value[0]))
-        print('│\tpassword:\t%-27.27s│'%(len(value[1])*'∙'))
-        print('│\thint:\t\t%-27.27s│'%(value[2]))
-        print('│%-50.50s│'%(''))
-    print('└──────────────────────────────────────────────────┘')
-    choice=input('> ')
-    os.system('cls')
-
-    if choice=='1': # input credentials
-        inputinfo.inputinfo(dir)
-    elif choice=='2': # remove something
-        print('you removed something')
-    elif choice=='3': # exit program 
-        print('exiting')
-        mainloop=False
-    elif choice in dir: # unhide password
-        print('┌─────────────────────────ANONG GUSTO MO GAWIN ERP─┐')
-        print('│%-50.50s│\n│%-50.50s│\n│%-50.50s│\n│%-50.50s│'%(
-            '1. Add Credential','2. Remove Credential','3. Exit','n. Enter Key to View Password'
-            ))
-        print('└──────────────────────────────────────────────────┘')
-        print('┌────────────────────────────────SAVED CREDENTIALS─┐')
-        if len(dir)==0:
-            print('│%-50.50s│'%('No saved credentials yet.'))
+    else:
         for key, value in dir.items():
             print('│%-50.50s│'%(f'{key}:'))
             print('│\tusername:\t%-27.27s│'%(value[0]))
-            if key==choice:
-                print('│\tpassword:\t%-27.27s│'%(value[1]))
-            else:
-                print('│\tpassword:\t%-27.27s│'%(len(value[1])*'∙'))
+            print('│\tpassword:\t%-27.27s│'%(len(value[1])*'∙'))
             print('│\thint:\t\t%-27.27s│'%(value[2]))
+            display.strength(value[3])
             print('│%-50.50s│'%(''))
-        print('└──────────────────────────────────────────────────┘')
-        os.system('pause')
-        os.system('cls')
+    print('└──────────────────────────────────────────────────┘')
+    choice=input('> ')
+    display.clear()
+
+    try:
+        if choice in ['E','e']: # exit program
+            print('┌──────────────────────────────────────────CONFIRM─┐')
+            print('│[S] save to file and quit.                        │')
+            print('│[Q] quit without saving.                          │')
+            print('│[C] cancel and go back to menu.                   │')
+            print('└──────────────────────────────────────────────────┘')
+            choice=input('> ')
+
+            if choice in ['S','s']:
+                write.save(mainUser,mainPass,dir)
+                mainloop=False
+            elif choice in ['Q','q']:
+                mainloop=False
+
+        elif choice in ['A','a']: # input credential
+            inputinfo.inputinfo(dir)
+        elif choice in dir: # unhide password
+            edit.edit(choice,dir)
+        elif choice[0]=='!' and choice[1:] in dir:
+            display.menu()
+            print('┌────────────────────────────────SAVED CREDENTIALS─┐')
+            for key, value in dir.items():
+                print('│%-50.50s│'%(f'{key}:'))
+                print('│\tusername:\t%-27.27s│'%(value[0]))
+                if key==choice[1:]: # only unhide the chosen key
+                    print('│\tpassword:\t%-27.27s│'%(value[1]))
+                    generate.copy(value[1])
+                else:
+                    print('│\tpassword:\t%-27.27s│'%(len(value[1])*'∙'))
+                print('│\thint:\t\t%-27.27s│'%(value[2]))
+                display.strength(value[3])
+                print('│%-50.50s│'%(''))
+            print('└──────────────────────────────────────────────────┘')
+            print('┌──────────────────────────────────────────────────┐')
+            print('│Password copied to clipboard.                     │')
+            print('└──────────────────────────────────────────────────┘')
+            display.pause()
+        elif choice.lower() == 'delete':
+            display.clear()
+            print('┌──────────────────────────────────────────WARNING─┐')
+            print('│Are you sure you want to delete your profile?     │')
+            print('│All info will be lost.                            │')
+            print('│Enter your password to continue.                  │')
+            print('└──────────────────────────────────────────────────┘')
+            choice=input('> ')
+            if choice==mainPass:
+                os.remove(f'{mainUser}.txt')
+                print('Profile deleted and the program will now exit.')
+                display.pause()
+                mainloop=False
+    except:
+        continue
+    display.clear()
