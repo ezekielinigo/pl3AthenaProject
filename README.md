@@ -1,4 +1,4 @@
-# EnigmaKey (Password Generator & Strength Checker)
+# PCGM (Password Checker, Generator, and Manager)
 
 ## Programming Language:
 Created using [Python](https://www.python.org/) with the following libraries:
