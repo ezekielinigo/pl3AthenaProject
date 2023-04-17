@@ -2,7 +2,7 @@ import os
 import platform
 
 def menu():
-    print('┌─────────────────────────ANONG GUSTO MO GAWIN ERP─┐')
+    print('┌─────────────────────────────────────────────PCGM─┐')
     print('│%-50.50s│\n│%-50.50s│\n│%-50.50s│\n│%-50.50s│\n│%-50.50s│'%(
     '    [E] end program','    [A] add credential',' [name] to edit credential','[!name] to view & copy password','[delete] to delete profile'))
     print('└──────────────────────────────────────────────────┘')
